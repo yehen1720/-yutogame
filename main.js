@@ -32,6 +32,38 @@ let phase = "idle";         // idle/show/hide/shuffle/guess/result
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
+function explodeAtClientXY(x, y){
+  // 画面揺れ（任意）
+  document.body.classList.add("screen-shake");
+  setTimeout(() => document.body.classList.remove("screen-shake"), 240);
+
+  const N = 18; // 粒の数（増やすほど派手）
+  for (let i = 0; i < N; i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+
+    // 出発点
+    p.style.left = x + "px";
+    p.style.top  = y + "px";
+
+    // 飛び散り方向
+    const angle = (Math.PI * 2) * (i / N) + (Math.random() * 0.4);
+    const dist  = 40 + Math.random() * 50;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+
+    p.style.setProperty("--dx", `${dx}px`);
+    p.style.setProperty("--dy", `${dy}px`);
+
+    // 色（ランダムにそれっぽい爆発色）
+    const hue = 20 + Math.random() * 50; // オレンジ〜黄色
+    p.style.background = `hsl(${hue}, 90%, 60%)`;
+
+    document.body.appendChild(p);
+    p.addEventListener("animationend", () => p.remove());
+  }
+}
+
 function setTransition(ms){
   for (const el of boxes) el.style.transitionDuration = `${ms}ms`;
 }
@@ -224,6 +256,18 @@ async function startRound(){
 }
 
 function onPick(boxId){
+  // ★スタート前（idle）で押したら爆発
+  if (phase === "idle"){
+    const rect = boxes[boxId].getBoundingClientRect();
+    explodeAtClientXY(rect.left + rect.width/2, rect.top + rect.height/2);
+    msg.textContent = "まだ。START押しなさい。";
+    return;
+  }
+
+  if (phase !== "guess") return;
+
+  // ↓ここから下は今のまま
+
   if (phase !== "guess") return;
 
   phase = "result";
@@ -333,6 +377,7 @@ speedVal.textContent = `${speedInput.value}ms`;
 
 render();
 resetAll();
+
 
 
 

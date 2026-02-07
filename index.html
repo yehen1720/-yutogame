@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ウエノゲーム！</title>
+  <title>ウエノゲーム</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -20,13 +20,13 @@
       <div class="controls">
         <label class="control">
           シャッフル回数
-          <input id="moves" type="range" min="3" max="15" value="6" />
-          <span id="movesVal" class="val">6</span>
+          <input id="moves" type="range" min="3" max="20" value="8" />
+          <span id="movesVal" class="val">8</span>
         </label>
 
         <label class="control">
           スピード
-          <input id="speed" type="range" min="250" max="900" value="520" />
+          <input id="speed" type="range" min="220" max="900" value="520" />
           <span id="speedVal" class="val">520ms</span>
         </label>
       </div>
@@ -37,23 +37,16 @@
         <button id="reset" class="btn">RESET</button>
       </div>
 
-      <p id="msg" class="msg">STARTを押しなさい。最初はボールが見えるよ。</p>
+      <p id="msg" class="msg">STARTを押して。最初はボールが見える。</p>
     </header>
 
     <section class="stage">
-      <div id="lane" class="lane" aria-label="boxes lane">
-        <!-- boxes are injected by JS -->
-      </div>
+      <div id="lane" class="lane" aria-label="boxes lane"></div>
     </section>
 
-    <footer class="tip">
-      ルール：最初にボール位置を見て → 隠れて → シャッフル → 当てる
-    </footer>
+    <footer class="tip">ルール：見える→隠す→シャッフル→当てる</footer>
   </main>
 
   <script src="main.js"></script>
 </body>
 </html>
-
-
-

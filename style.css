@@ -133,3 +133,22 @@ body{
   .lane{ height: 360px; }
 }
 
+/* ずっと形が変形し続ける（呼吸する箱） */
+@keyframes morph {
+  0%   { border-radius: 22px; transform: translateZ(0) scale(1) skewX(0deg); }
+  25%  { border-radius: 30px 18px 26px 20px; transform: translateZ(0) scale(1.01) skewX(0.8deg); }
+  50%  { border-radius: 18px 30px 20px 26px; transform: translateZ(0) scale(0.99) skewX(-0.8deg); }
+  75%  { border-radius: 26px 20px 30px 18px; transform: translateZ(0) scale(1.01) skewX(0.5deg); }
+  100% { border-radius: 22px; transform: translateZ(0) scale(1) skewX(0deg); }
+}
+
+/* デフォで全箱に適用（ずっと動く） */
+.box .lid{
+  animation: morph 2.4s ease-in-out infinite;
+}
+
+/* 箱ごとに位相ズラし（バラバラに動いて厄介になる） */
+.box:nth-child(1) .lid{ animation-delay: 0s; }
+.box:nth-child(2) .lid{ animation-delay: -0.8s; }
+.box:nth-child(3) .lid{ animation-delay: -1.6s; }
+

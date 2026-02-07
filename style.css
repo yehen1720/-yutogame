@@ -217,4 +217,6 @@ body{
 .box .hole { display: none; }
 .hole { display: none !important; }
 
+.lane::after{ content: none !important; display: none !important; }
+
 

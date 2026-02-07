@@ -278,7 +278,11 @@ function resetAll(){
 
 startBtn.addEventListener("click", startRound);
 nextBtn.addEventListener("click", startRound);
-resetBtn.addEventListener("click", resetAll);
+resetBtn.addEventListener("click", () => {
+  const ok = confirm("これリセットですけど");
+  if (!ok) return;
+  resetAll();
+});
 
 movesInput.addEventListener("input", () => {
   movesVal.textContent = String(movesInput.value);
@@ -297,6 +301,7 @@ speedVal.textContent = `${speedInput.value}ms`;
 
 render();
 resetAll();
+
 
 
 

@@ -26,8 +26,6 @@ let ballSlot = 0;           // ボールが入っているスロット(0..2)
 let slotOfBoxId = [0,1,2];  // boxId(0..2) が今どのスロットにいるか
 let phase = "idle";         // idle/show/hide/shuffle/guess/result
 
-let isBonusRound = false;
-
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 function setTransition(ms){
@@ -143,7 +141,7 @@ function render(){
   lane.innerHTML = "";
   boxes = [];
 
-  for (let id = 0; id < boxCount; id++){
+  for (let id = 0; id < 3; id++){
     const b = document.createElement("div");
     b.className = "box";
     b.dataset.id = String(id);
@@ -167,68 +165,57 @@ function render(){
 }
 
 async function startRound(){
-
-  // ボーナスなら箱6個、通常は3個
-  const boxCount = isBonusRound ? 6 : 3;
-
   phase = "show";
   nextBtn.disabled = true;
   startBtn.disabled = true;
   clearMarks();
 
-  // スロット初期化
-  slotOfBoxId = [];
-  for (let i = 0; i < boxCount; i++){
-    slotOfBoxId.push(i);
-  }
-
-  // ボール位置ランダム
-  ballSlot = Math.floor(Math.random() * boxCount);
-
-  // 速度と回数
-  let moves = Number(movesInput.value);
-  let speed = Number(speedInput.value);
-
-  // ★ボーナス強化
-  if (isBonusRound){
-    moves += 6;     // 回数増
-    speed *= 0.6;   // かなり速く
-    msg.textContent = "BONUS ROUND";
-  } else {
-    msg.textContent = "見なさい。ボールの位置を覚えるの。";
-  }
-
-  setTransition(speed);
+  slotOfBoxId = [0,1,2];
+  pickRandomBallSlot();
+  setTransition(Number(speedInput.value));
   showBall(true);
   setClickable(false);
 
   applyPositions();
 
-  await sleep(700);
+  msg.textContent = "見て。ボールの位置を覚えろ。";
+  await sleep(900);
 
-  // 隠す
   phase = "hide";
+  msg.textContent = "隠すよ。";
   showBall(false);
-  await sleep(350);
+  await sleep(450);
 
-  // シャッフル
   phase = "shuffle";
+  const moves = Number(movesInput.value);
+  msg.textContent = `シャッフル中…（${moves}回）`;
 
   for (let i = 0; i < moves; i++){
+    const speed = Number(speedInput.value);
 
-    const a = Math.floor(Math.random() * boxCount);
-    let b = Math.floor(Math.random() * boxCount);
-    while (b === a) b = Math.floor(Math.random() * boxCount);
+    if (Math.random() < FEINT_CHANCE){
+      msg.textContent = "シャッフル中…（フェイント）";
+      await sleep(Math.floor(speed * FEINT_PAUSE_RATIO));
+    } else {
+      msg.textContent = `シャッフル中…（${moves}回）`;
+    }
 
-    swapSlots(a, b);
+    const [sa, sb] = randomSwapPair();
+    swapSlots(sa, sb);
     applyPositions();
+    await sleep(speed + 60);
 
-    await sleep(speed);
+    if (Math.random() < FEINT_CHANCE * 0.6){
+      await sleep(Math.floor(speed * 0.18));
+      const [sa2, sb2] = randomSwapPair();
+      swapSlots(sa2, sb2);
+      applyPositions();
+      await sleep(speed * 0.65);
+    }
   }
 
-  // 選択フェーズ
   phase = "guess";
-  msg.textContent = "どれに入ってるか分かるね？";
+  msg.textContent = "どれに入ってるかわかると思うけど、箱をタップして。";
   setClickable(true);
 }
 
@@ -250,8 +237,6 @@ function onPick(boxId){
     win++;
     level++;
     msg.textContent = "当たり！";
-    // 次はボーナスラウンド
-isBonusRound = true;
   } else {
     boxes[boxId].classList.add("wrong");
     const correctBoxId = slotOfBoxId.indexOf(ballSlot);
@@ -267,10 +252,6 @@ isBonusRound = true;
 
   nextBtn.disabled = false;
   startBtn.disabled = true;
-
-  // ボーナスは1回で終了
-isBonusRound = false;
-
 }
 
 function resetAll(){
@@ -316,6 +297,5 @@ speedVal.textContent = `${speedInput.value}ms`;
 
 render();
 resetAll();
-
 
 

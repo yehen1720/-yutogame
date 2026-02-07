@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>シェルゲーム</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <header class="top">
+      <h1>シェルゲーム</h1>
+
+      <div class="hud">
+        <div class="pill">LEVEL: <span id="level">1</span></div>
+        <div class="pill">WIN: <span id="win">0</span></div>
+        <div class="pill">LOSE: <span id="lose">0</span></div>
+      </div>
+
+      <div class="controls">
+        <label class="control">
+          シャッフル回数
+          <input id="moves" type="range" min="3" max="15" value="6" />
+          <span id="movesVal" class="val">6</span>
+        </label>
+
+        <label class="control">
+          スピード
+          <input id="speed" type="range" min="250" max="900" value="520" />
+          <span id="speedVal" class="val">520ms</span>
+        </label>
+      </div>
+
+      <div class="btns">
+        <button id="start" class="btn">START</button>
+        <button id="next" class="btn" disabled>NEXT</button>
+        <button id="reset" class="btn">RESET</button>
+      </div>
+
+      <p id="msg" class="msg">STARTを押しなさい。最初はボールが見えるよ。</p>
+    </header>
+
+    <section class="stage">
+      <div id="lane" class="lane" aria-label="boxes lane">
+        <!-- boxes are injected by JS -->
+      </div>
+    </section>
+
+    <footer class="tip">
+      ルール：最初にボール位置を見て → 隠れて → シャッフル → 当てる
+    </footer>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>

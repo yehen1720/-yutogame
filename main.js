@@ -32,12 +32,14 @@ function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 function layoutSlots(){
   const rect = lane.getBoundingClientRect();
-  const gap = (rect.width - 3*180) / 2;
-  // 左の余白をgapとして 0, 180+gap, 2*(180+gap)
+  const boxWidth = boxes[0]?.getBoundingClientRect().width || 180;
+
+  const gap = (rect.width - 3 * boxWidth) / 2;
+
   return [
     0,
-    180 + gap,
-    2*(180 + gap),
+    boxWidth + gap,
+    2 * (boxWidth + gap),
   ];
 }
 
@@ -281,3 +283,4 @@ movesVal.textContent = String(movesInput.value);
 speedVal.textContent = `${speedInput.value}ms`;
 render();
 resetAll();
+

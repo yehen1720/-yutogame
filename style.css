@@ -88,6 +88,8 @@ body{
   cursor: pointer;
   transition: left 520ms ease;
   user-select:none;
+    overflow: visible;
+  will-change: transform;
 }
 .box .lid{
   position:absolute;
@@ -133,22 +135,52 @@ body{
   .lane{ height: 360px; }
 }
 
-/* ずっと形が変形し続ける（呼吸する箱） */
-@keyframes morph {
-  0%   { border-radius: 22px; transform: translateZ(0) scale(1) skewX(0deg); }
-  25%  { border-radius: 30px 18px 26px 20px; transform: translateZ(0) scale(1.01) skewX(0.8deg); }
-  50%  { border-radius: 18px 30px 20px 26px; transform: translateZ(0) scale(0.99) skewX(-0.8deg); }
-  75%  { border-radius: 26px 20px 30px 18px; transform: translateZ(0) scale(1.01) skewX(0.5deg); }
-  100% { border-radius: 22px; transform: translateZ(0) scale(1) skewX(0deg); }
+/* 箱の中に「変形する皮」を追加して、丸⇄四角を派手にやる */
+.box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: 22px;
+  background: rgba(0,0,0,0.28);
+  border:1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transform-origin: center;
+  animation: dramaticMorph 1.15s ease-in-out infinite;
 }
 
-/* デフォで全箱に適用（ずっと動く） */
-.box .lid{
-  animation: morph 2.4s ease-in-out infinite;
+/* 既存の見た目要素は上に乗せる */
+.box .lid, .box .hole{
+  position: relative;
+  z-index: 1;
 }
 
-/* 箱ごとに位相ズラし（バラバラに動いて厄介になる） */
-.box:nth-child(1) .lid{ animation-delay: 0s; }
-.box:nth-child(2) .lid{ animation-delay: -0.8s; }
-.box:nth-child(3) .lid{ animation-delay: -1.6s; }
+/* 派手な変形：四角→角丸→丸→ひし形→四角… */
+@keyframes dramaticMorph{
+  0%{
+    border-radius: 4px;
+    transform: rotate(0deg) scale(1);
+  }
+  20%{
+    border-radius: 26px;
+    transform: rotate(6deg) scale(1.03);
+  }
+  45%{
+    border-radius: 999px;
+    transform: rotate(-8deg) scale(1.06);
+  }
+  70%{
+    border-radius: 40px 4px 40px 4px;
+    transform: rotate(10deg) scale(1.02);
+  }
+  100%{
+    border-radius: 4px;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* 3箱で位相をずらして更に追いにくく */
+.box:nth-child(1)::before{ animation-delay: 0s; }
+.box:nth-child(2)::before{ animation-delay: -0.38s; }
+.box:nth-child(3)::before{ animation-delay: -0.76s; }
+
 

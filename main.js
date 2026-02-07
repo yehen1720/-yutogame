@@ -32,15 +32,23 @@ function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 function layoutSlots(){
   const rect = lane.getBoundingClientRect();
-  const boxWidth = boxes[0]?.getBoundingClientRect().width || 180;
 
-  const gap = (rect.width - 3 * boxWidth) / 2;
+  // スマホでも必ず入るように、箱幅を「画面幅から逆算」して決める
+  const padding = 0;      // leftを0基準で置く設計なので0
+  const minGap = 10;      // 箱と箱の最低すき間(px)
+  const maxBox = 180;     // PCの標準
+  const minBox = 90;      // 小さくしすぎ防止
 
-  return [
-    0,
-    boxWidth + gap,
-    2 * (boxWidth + gap),
-  ];
+  const available = rect.width - padding * 2;
+  // 3箱 + gap2つ が入るように箱幅を計算
+  let boxW = Math.floor((available - minGap * 2) / 3);
+  boxW = Math.max(minBox, Math.min(maxBox, boxW));
+
+  // gapを再計算（足りない場合は0でもよい）
+  let gap = Math.floor((available - boxW * 3) / 2);
+  gap = Math.max(minGap, gap);
+
+  return [0, boxW + gap, 2 * (boxW + gap)];
 }
 
 function setTransition(ms){
@@ -77,12 +85,23 @@ b.innerHTML = `
 
 function applyPositions(){
   const xs = layoutSlots();
+
+  // 現在の箱幅を「隣スロットとの差」から推定
+  const step = xs[1] - xs[0];
+  const rect = lane.getBoundingClientRect();
+  const minGap = 10;
+  let boxW = step - minGap;
+  boxW = Math.max(90, Math.min(180, boxW));
+
+  // 箱サイズもJSで合わせる（CSSが効かなくても確実）
   for (let id = 0; id < 3; id++){
     const slot = slotOfBoxId[id];
+    boxes[id].style.width = `${boxW}px`;
     boxes[id].style.left = `${xs[slot]}px`;
   }
-  // ボールは「スロット」に紐づく（箱が動けば一緒に動くように見える）
-  ballEl.style.left = `${xs[ballSlot] + 90}px`; // 箱の中心（180/2=90）
+
+  // ボールは「箱の中央」に置く（90固定をやめる）
+  ballEl.style.left = `${xs[ballSlot] + boxW / 2}px`;
 }
 
 function showBall(isVisible){
@@ -283,4 +302,5 @@ movesVal.textContent = String(movesInput.value);
 speedVal.textContent = `${speedInput.value}ms`;
 render();
 resetAll();
+
 

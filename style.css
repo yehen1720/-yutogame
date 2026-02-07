@@ -232,5 +232,33 @@ body{
 
 .lane::after{ content: none !important; display: none !important; }
 
+.backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+.backdrop.hidden{ display: none; }
+
+.modal{
+  width: min(420px, calc(100% - 32px));
+  background: rgba(20, 24, 45, 0.95);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+.modalText{
+  margin: 0 0 12px;
+  font-weight: 900;
+}
+.modalBtns{
+  display:flex;
+  gap:10px;
+  justify-content: flex-end;
+}
+
 
 

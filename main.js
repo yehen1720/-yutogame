@@ -33,22 +33,21 @@ function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 function layoutSlots(){
   const rect = lane.getBoundingClientRect();
 
-  // スマホでも必ず入るように、箱幅を「画面幅から逆算」して決める
-  const padding = 0;      // leftを0基準で置く設計なので0
-  const minGap = 10;      // 箱と箱の最低すき間(px)
-  const maxBox = 180;     // PCの標準
-  const minBox = 90;      // 小さくしすぎ防止
+  const PAD = 18;      // .lane の padding と同じ
+  const minGap = 10;
+  const maxBox = 180;
+  const minBox = 90;
 
-  const available = rect.width - padding * 2;
-  // 3箱 + gap2つ が入るように箱幅を計算
+  const available = rect.width - PAD * 2; // padding分を引く
+
   let boxW = Math.floor((available - minGap * 2) / 3);
   boxW = Math.max(minBox, Math.min(maxBox, boxW));
 
-  // gapを再計算（足りない場合は0でもよい）
   let gap = Math.floor((available - boxW * 3) / 2);
   gap = Math.max(minGap, gap);
 
-  return [0, boxW + gap, 2 * (boxW + gap)];
+  // 位置は PAD から始める（これで画面外に行かない）
+  return [PAD, PAD + boxW + gap, PAD + 2 * (boxW + gap)];
 }
 
 function setTransition(ms){
@@ -86,26 +85,30 @@ b.innerHTML = `
 function applyPositions(){
   const xs = layoutSlots();
 
-  // 現在の箱幅を「隣スロットとの差」から推定
-  const step = xs[1] - xs[0];
+  const PAD = 18;
   const minGap = 10;
+
+  const step = xs[1] - xs[0];
   let boxW = step - minGap;
   boxW = Math.max(90, Math.min(180, boxW));
 
-  // 箱の位置＆サイズ
+  // 高さも幅に合わせて決める（スマホで消えない）
+  const boxH = Math.round(boxW * 1.15);
+
   for (let id = 0; id < 3; id++){
     const slot = slotOfBoxId[id];
     boxes[id].style.width = `${boxW}px`;
+    boxes[id].style.height = `${boxH}px`;
     boxes[id].style.left = `${xs[slot]}px`;
   }
 
-  // ボールを「ボールが入ってる箱の中」に入れる（ズレ防止の本命）
+  // ボールは「ボールが入ってる箱の中」に入れる
   const boxIdAtBall = slotOfBoxId.indexOf(ballSlot);
   if (boxIdAtBall >= 0) {
     boxes[boxIdAtBall].appendChild(ballEl);
     ballEl.style.left = "50%";
     ballEl.style.top = "auto";
-    ballEl.style.bottom = "40px";
+    ballEl.style.bottom = "18px"; // 箱の底からちょい上（好みで調整）
     ballEl.style.transform = "translateX(-50%)";
   }
 }
@@ -325,6 +328,7 @@ movesVal.textContent = String(movesInput.value);
 speedVal.textContent = `${speedInput.value}ms`;
 render();
 resetAll();
+
 
 
 

@@ -219,17 +219,14 @@ async function startRound(){
 
   phase = "shuffle";
   const moves = 5; // ←固定
-  msg.textContent = `シャッフル中…（${moves}回）`;
-
+  
   for (let i = 0; i < moves; i++){
     const speed = 700; // ←固定
 
     if (Math.random() < FEINT_CHANCE){
-      msg.textContent = "シャッフル中…（フェイント）";
       await sleep(Math.floor(speed * FEINT_PAUSE_RATIO));
     } else {
-      msg.textContent = `シャッフル中…（${moves}回）`;
-    }
+          }
 
     const [sa, sb] = randomSwapPair();
     swapSlots(sa, sb);
@@ -255,7 +252,7 @@ function onPick(boxId){
   if (phase === "idle"){
     const rect = boxes[boxId].getBoundingClientRect();
     explodeAtClientXY(rect.left + rect.width/2, rect.top + rect.height/2);
-    msg.textContent = "まだ。START押しなさい。";
+    msg.textContent = "START押せ";
     return;
   }
 
@@ -366,6 +363,7 @@ lane.addEventListener("selectstart", (e) => e.preventDefault());
 
 render();
 resetAll();
+
 
 
 

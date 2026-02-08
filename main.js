@@ -203,7 +203,7 @@ async function startRound(){
 
   slotOfBoxId = [0,1,2];
   pickRandomBallSlot();
-  setTransition(1000 - Number(speedInput.value));
+  setTransition(700);
   showBall(true);
   setClickable(false);
 
@@ -310,7 +310,7 @@ function resetAll(){
   slotOfBoxId = [0,1,2];
   ballSlot = 0;
 
-  setTransition(1000 - Number(speedInput.value));
+  setTransition(700);
   setClickable(false);
   clearMarks();
   showBall(true);
@@ -359,8 +359,6 @@ window.addEventListener("resize", () => {
   applyPositions();
 });
 
-movesVal.textContent = String(movesInput.value);
-speedVal.textContent = `${speedInput.value}ms`;
 
 // ゲームエリアではコンテキストメニュー（長押し）を無効化
 lane.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -368,6 +366,7 @@ lane.addEventListener("selectstart", (e) => e.preventDefault());
 
 render();
 resetAll();
+
 
 
 

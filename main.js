@@ -321,33 +321,30 @@ function onPick(boxId){
   showBall(true);
   applyPositions();
 
-clearMarks();
+  clearMarks();
 
-if (correct){
-  boxes[boxId].classList.add("correct");
-  win++;
-  round++; // 正解のときだけ進む
-  msg.textContent = "当たり！";
-} else {
-  boxes[boxId].classList.add("wrong");
-  boxes[ballBoxId].classList.add("correct");
-  lose++;
-  msg.textContent = "ハズレ。論外。";
+  if (correct){
+    boxes[boxId].classList.add("correct");
+    win++;
+    round++; // 正解のときだけ進む
+    msg.textContent = "当たり！";
+  } else {
+    boxes[boxId].classList.add("wrong");
+    boxes[ballBoxId].classList.add("correct");
+    lose++;
+    msg.textContent = "ハズレ。論外。";
+  }
+
+  levelEl.textContent = String(round);
+  winEl.textContent = String(win);
+  loseEl.textContent = String(lose);
+
+  // 正解したときだけNEXTを押せる
+  nextBtn.disabled = !correct;
+  startBtn.disabled = true;
 }
 
-levelEl.textContent = String(round);
-winEl.textContent = String(win);
-loseEl.textContent = String(lose);
 
-// 正解したときだけNEXTを押せる
-nextBtn.disabled = !correct;
-startBtn.disabled = true;
-
-// ★ここも大事：ハズレのときはNEXTを押させない
-nextBtn.disabled = !correct;
-startBtn.disabled = true;
-
- 
 function resetAll(){
   round = 1;
   win = 0;
@@ -410,6 +407,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

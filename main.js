@@ -26,7 +26,6 @@ let ballEl = null;
 let ballSlot = 0;           // ボールが入っているスロット(0..2)
 let slotOfBoxId = [0,1,2];  // boxId(0..2) が今どのスロットにいるか
 let phase = "idle";         // idle/show/hide/shuffle/guess/result
-let boxCount = 3;
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
@@ -365,6 +364,7 @@ lane.addEventListener("selectstart", (e) => e.preventDefault());
 
 render();
 resetAll();
+
 
 
 

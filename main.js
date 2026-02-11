@@ -254,12 +254,19 @@ function setRoundBoxes(){
 }
 
 async function startRound(){
-// ROUND1開始の瞬間だけタイマー開始
-if (round === 1 && startTime === 0){
-  startTime = Date.now();
-}
-  
-const d = setRoundBoxes();
+
+  // ★最初だけ案内（1回だけ）
+  if (round === 1 && startTime === 0){
+    msg.textContent = "全部で7ROUNDあるよ";
+    await sleep(1200); // 表示時間
+  }
+
+  // ROUND1開始の瞬間だけタイマー開始
+  if (round === 1 && startTime === 0){
+    startTime = Date.now();
+  }
+
+  const d = setRoundBoxes();
   render();
   document.body.classList.toggle("round99", round === 99);
 
@@ -423,6 +430,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

@@ -204,7 +204,7 @@ function render(){
   setClickable(false);
   showBall(true);
 
-  setTransition(_SPEED);
+  setTransition(BASE_SPEED);
   applyPositions();
 }
 
@@ -224,7 +224,7 @@ async function startRound(){
   startBtn.disabled = true;
   clearMarks();
 
-  setTransition(_SPEED);
+  setTransition(BASE_SPEED);
   showBall(true);
   setClickable(false);
   applyPositions();
@@ -327,7 +327,7 @@ function resetAll(){
   ballBoxId = Math.floor(Math.random() * boxCount);
 
   render();
-  setTransition(SHUFFLE_SPEED);
+  setTransition(BASE_SPEED);
 
   setClickable(false);
   clearMarks();
@@ -371,4 +371,5 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 

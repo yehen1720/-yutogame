@@ -1,7 +1,10 @@
 // =======================
 // ウエノゲーム main.js（差し替え版）
 // Round1: 3箱 / Round2以降: 9箱（3×3）
-// シャッフル: 5回固定 / スピード: 700ms固定
+// Round2: moves=30
+// Round3: feint無し
+// 以降: speed倍速化（数値は小さいほど速い）
+// シャッフル間隔(gap)も調整
 // =======================
 
 const lane = document.getElementById("lane");
@@ -18,12 +21,10 @@ const levelEl = document.getElementById("level"); // 表示はROUND扱い
 const winEl = document.getElementById("win");
 const loseEl = document.getElementById("lose");
 
-// フェイント設定
-const FEINT_CHANCE = 0.35;
+// フェイント設定（係数）
 const FEINT_PAUSE_RATIO = 0.45;
 
-// 固定難易度
-const SHUFFLE_MOVES = 5;
+// 基準（Round1）
 const BASE_SPEED = 700;
 
 function getDifficulty(r){
@@ -34,27 +35,19 @@ function getDifficulty(r){
   // Round2から30回固定
   const moves = isHard ? 30 : 5;
 
-  // ===== スピード =====
-  // Round1 → 700
-  // Round2 → 350
-  // Round3 → 350（フェイント無し）
-  // Round4以降 → どんどん倍速
+  // スピード（数値が小さいほど速い）
   let speed;
   if (r === 1) speed = 700;
   else if (r === 2) speed = 350;
   else if (r === 3) speed = 350;
   else speed = Math.max(350 / Math.pow(2, r - 3), 60); // 下限60ms
 
-  // ===== フェイント =====
-  // Round1 → 少しあり
-  // Round2 → あり
-  // Round3 → なし
-  // Round4以降 → なし（純粋な速度勝負）
+  // フェイント確率（Round3だけ無し）
   let feintChance;
   if (r === 3) feintChance = 0;
   else feintChance = isHard ? 0.35 : 0.35;
 
-  // ===== シャッフル間隔 =====
+  // シャッフル間隔（動きの速さとは別）
   const gap = isHard ? 10 : 60;
 
   return { boxCount, moves, speed, feintChance, gap };
@@ -73,12 +66,12 @@ let ballEl = null;
 // slotOfBoxId[boxId] = slotIndex（0..boxCount-1）
 let slotOfBoxId = [];
 
-// ボールが入ってる“箱ID”（0..boxCount-1）
+// ボールが入ってる箱ID（0..boxCount-1）
 let ballBoxId = 0;
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-// --------- 爆発エフェクト（CSSがあれば派手、なくても動作に影響なし） ----------
+// --------- 爆発エフェクト ----------
 function explodeAtClientXY(x, y){
   document.body.classList.add("screen-shake");
   setTimeout(() => document.body.classList.remove("screen-shake"), 240);
@@ -104,7 +97,6 @@ function explodeAtClientXY(x, y){
 
     document.body.appendChild(p);
     p.addEventListener("animationend", () => p.remove());
-    // CSSが無くても、念のため消す
     setTimeout(() => p.remove(), 700);
   }
 }
@@ -133,7 +125,7 @@ function setClickable(on){
   }
 }
 
-// --------- レイアウト（3列グリッド：9箱は3×3、3箱は1行3列） ----------
+// --------- レイアウト ----------
 function calcLayout(){
   const rect = lane.getBoundingClientRect();
 
@@ -183,7 +175,6 @@ function applyPositions(){
     boxes[id].style.top    = `${ys[r]}px`;
   }
 
-  // ボールは入ってる箱の中に常に入れる（ズレ根絶）
   if (ballEl && ballBoxId >= 0 && ballBoxId < boxCount){
     boxes[ballBoxId].appendChild(ballEl);
     ballEl.style.left = "50%";
@@ -211,8 +202,6 @@ function swapSlots(sa, sb){
 
   slotOfBoxId[boxA] = sb;
   slotOfBoxId[boxB] = sa;
-
-  // ballBoxIdは動かさない：箱と一緒に移動する（appendChildで追従）
 }
 
 // --------- 描画 ----------
@@ -250,7 +239,7 @@ function setRoundBoxes(){
   slotOfBoxId = Array.from({ length: boxCount }, (_, i) => i);
   ballBoxId = Math.floor(Math.random() * boxCount);
 
-  return d; // startRoundで moves/speed/feint を使う
+  return d;
 }
 
 async function startRound(){
@@ -303,7 +292,6 @@ async function startRound(){
 }
 
 function onPick(boxId){
-  // スタート前に押したら爆発
   if (phase === "idle"){
     const rect = boxes[boxId].getBoundingClientRect();
     explodeAtClientXY(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -320,7 +308,6 @@ function onPick(boxId){
 
   showBall(true);
   applyPositions();
-
   clearMarks();
 
   if (correct){
@@ -339,11 +326,9 @@ function onPick(boxId){
   winEl.textContent = String(win);
   loseEl.textContent = String(lose);
 
-  // 正解したときだけNEXTを押せる
-  nextBtn.disabled = !correct;
+  nextBtn.disabled = !correct; // 正解だけNEXT
   startBtn.disabled = true;
 }
-
 
 function resetAll(){
   round = 1;
@@ -364,7 +349,6 @@ function resetAll(){
 
   render();
   setTransition(BASE_SPEED);
-
   setClickable(false);
   clearMarks();
   showBall(true);
@@ -373,48 +357,22 @@ function resetAll(){
   msg.textContent = "STARTを押して";
 }
 
-// --------- RESETモーダル（重複登録しない） ----------
-function openResetModal(){
-  modalBackdrop.classList.remove("hidden");
-}
-function closeResetModal(){
-  modalBackdrop.classList.add("hidden");
-}
+// --------- RESETモーダル ----------
+function openResetModal(){ modalBackdrop.classList.remove("hidden"); }
+function closeResetModal(){ modalBackdrop.classList.add("hidden"); }
 
 resetBtn.addEventListener("click", openResetModal);
-
 modalCancel.addEventListener("click", closeResetModal);
-
-modalOk.addEventListener("click", () => {
-  closeResetModal();
-  resetAll();
-});
-
-modalBackdrop.addEventListener("click", (e) => {
-  if (e.target === modalBackdrop) closeResetModal();
-});
+modalOk.addEventListener("click", () => { closeResetModal(); resetAll(); });
+modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeResetModal(); });
 
 // --------- その他 ----------
 window.addEventListener("resize", () => applyPositions());
-
-// ゲームエリアで選択・長押しメニューを抑止（完全に防げないが体験は改善）
 lane.addEventListener("contextmenu", (e) => e.preventDefault());
 lane.addEventListener("selectstart", (e) => e.preventDefault());
 
-// ボタン
 startBtn.addEventListener("click", startRound);
 nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
-
-
-
-
-
-
-
-
-
-
-

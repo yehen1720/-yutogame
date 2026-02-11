@@ -28,7 +28,18 @@ const FEINT_PAUSE_RATIO = 0.45;
 const BASE_SPEED = 700;
 
 function getDifficulty(r){
+  // ===== FINAL（ROUND100） =====
+  if (r === 100){
+    return {
+      boxCount: 2,
+      moves: 300,      // 30回の10倍（=300回）
+      speed: 35,       // 350msの10倍速（数値が小さいほど速い）
+      feintChance: 0,  // フェイント無し
+      gap: 1           // シャッフル間隔も極小
+    };
+  }
 
+    
     // ===== Round1 =====
   if (r === 1){
     return {
@@ -81,6 +92,9 @@ let slotOfBoxId = [];
 let ballBoxId = 0;
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+function updateRoundLabel(){
+  levelEl.textContent = (round === 100) ? "FINAL ROUND" : String(round);
+}
 
 // --------- 爆発エフェクト ----------
 function explodeAtClientXY(x, y){
@@ -144,7 +158,7 @@ function calcLayout(){
   if (rect.width < 360) PAD = 12;
   if (rect.width < 320) PAD = 8;
 
-  const cols = 3;
+  const cols = (boxCount <= 2) ? 2 : 3;
   const rows = Math.ceil(boxCount / cols);
 
   const availableW = rect.width - PAD * 2;
@@ -371,7 +385,7 @@ function onPick(boxId){
 }
 
 
-  levelEl.textContent = String(round);
+  updateRoundLabel();
   winEl.textContent = String(win);
   loseEl.textContent = String(lose);
 
@@ -430,6 +444,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

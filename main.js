@@ -21,6 +21,8 @@ const levelEl = document.getElementById("level"); // 表示はROUND扱い
 const winEl = document.getElementById("win");
 const loseEl = document.getElementById("lose");
 
+const introScreen = document.getElementById("introScreen");
+
 // フェイント設定（係数）
 const FEINT_PAUSE_RATIO = 0.45;
 
@@ -269,10 +271,11 @@ function setRoundBoxes(){
 
 async function startRound(){
 
-  // ★最初だけ案内（1回だけ）
+  // ★最初の1回だけ全画面メッセージ
   if (round === 1 && startTime === 0){
-    msg.textContent = "全部で7ROUNDあるよ";
-    await sleep(1200); // 表示時間
+    introScreen.classList.remove("hidden"); // 表示
+    await sleep(1800);                      // 1.8秒見せる
+    introScreen.classList.add("hidden");    // 消す
   }
 
   // ROUND1開始の瞬間だけタイマー開始
@@ -444,6 +447,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

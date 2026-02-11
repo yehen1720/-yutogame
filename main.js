@@ -24,7 +24,7 @@ let boxes = [];
 let ballEl = null;
 
 let ballSlot = 0;           // ボールが入っているスロット(0..2)
-let slotOfBoxId = [0,1,2];  // boxId(0..2) が今どのスロットにいるか
+let slotOfBoxId = [];  // boxId(0..2) が今どのスロットにいるか
 let phase = "idle";         // idle/show/hide/shuffle/guess/result
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
@@ -139,7 +139,7 @@ function applyPositions(){
 }
 
 function pickRandomBallSlot(){
-  ballSlot = Math.floor(Math.random() * 3);
+  ballSlot = Math.floor(Math.random() * boxcount);
 }
 
 function randomSwapPair(){
@@ -204,7 +204,7 @@ render();
   startBtn.disabled = true;
   clearMarks();
 
-  slotOfBoxId = [0,1,2];
+  slotOfBoxId = Array.from({ length: boxCount }, (_, i) => i);
   pickRandomBallSlot();
   setTransition(700);
   showBall(true);
@@ -305,7 +305,7 @@ function resetAll(){
   startBtn.disabled = false;
   nextBtn.disabled = true;
 
-  slotOfBoxId = [0,1,2];
+  slotOfBoxId = Array.from({ length: boxCount }, (_, i) => i);
   ballSlot = 0;
 
   setTransition(700);
@@ -364,6 +364,7 @@ lane.addEventListener("selectstart", (e) => e.preventDefault());
 
 render();
 resetAll();
+
 
 
 

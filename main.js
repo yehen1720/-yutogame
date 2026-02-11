@@ -120,16 +120,17 @@ function applyPositions(){
   const { xs, ys, boxW, boxH, cols } = calcLayout();
 
   for (let id = 0; id < boxCount; id++){
-    const slot = slotOfBoxId[id]; // 0..8
-    const r = Math.floor(slot / cols);
-    const c = slot % cols;
+    const slot = slotOfBoxId[id];      // 0..8
+    const r = Math.floor(slot / cols); // 行
+    const c = slot % cols;             // 列
 
     boxes[id].style.width  = `${boxW}px`;
     boxes[id].style.height = `${boxH}px`;
     boxes[id].style.left   = `${xs[c]}px`;
-    boxes[id].style.top    = `${ys[r]}px`;
+    boxes[id].style.top    = `${ys[r]}px`;   // ★これが3×3の本体
   }
 
+  // ボールはballBoxIdの箱に入れる
   if (ballBoxId >= 0 && ballBoxId < boxCount){
     boxes[ballBoxId].appendChild(ballEl);
     ballEl.style.left = "50%";
@@ -364,6 +365,7 @@ lane.addEventListener("selectstart", (e) => e.preventDefault());
 
 render();
 resetAll();
+
 
 
 

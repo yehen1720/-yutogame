@@ -27,21 +27,36 @@ const SHUFFLE_MOVES = 5;
 const BASE_SPEED = 700;
 
 function getDifficulty(r){
-  // r = 現在のround（1,2,3...）
   const isHard = (r >= 2);
 
   const boxCount = isHard ? 9 : 3;
 
-  // 回数：Round2からじわ増え（上限で頭打ち）
-  const moves = isHard ? 30 + (r - 2) * 3 : 5;
+  // Round2から30回固定
+  const moves = isHard ? 30 : 5;
 
-  // 速度：Round2で一気に速く、その後ゆっくり速く（下限で頭打ち）
-  const speed = isHard ? Math.max(350 - (r - 2) * 18, 220) : 700;
+  // ===== スピード =====
+  // Round1 → 700
+  // Round2 → 350
+  // Round3 → 350（フェイント無し）
+  // Round4以降 → どんどん倍速
+  let speed;
+  if (r === 1) speed = 700;
+  else if (r === 2) speed = 350;
+  else if (r === 3) speed = 350;
+  else speed = Math.max(350 / Math.pow(2, r - 3), 60); // 下限60ms
 
-  // フェイント：ちょい増やす（最大0.65）
-  const feintChance = isHard ? Math.min(0.35 + (r - 2) * 0.03, 0.65) : 0.35;
-  const gap = isHard ? Math.max(10 - (r - 2) * 2, 0) : 60;
-  
+  // ===== フェイント =====
+  // Round1 → 少しあり
+  // Round2 → あり
+  // Round3 → なし
+  // Round4以降 → なし（純粋な速度勝負）
+  let feintChance;
+  if (r === 3) feintChance = 0;
+  else feintChance = isHard ? 0.35 : 0.35;
+
+  // ===== シャッフル間隔 =====
+  const gap = isHard ? 10 : 60;
+
   return { boxCount, moves, speed, feintChance, gap };
 }
 
@@ -390,6 +405,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

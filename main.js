@@ -253,6 +253,7 @@ function setRoundBoxes(){
 async function startRound(){
   const d = setRoundBoxes();
   render();
+  document.body.classList.toggle("round99", round === 99);
 
   phase = "show";
   nextBtn.disabled = true;
@@ -369,6 +370,8 @@ function resetAll(){
   showBall(true);
   applyPositions();
 
+  document.body.classList.remove("round99");
+
   msg.textContent = "STARTを押して";
 }
 
@@ -391,6 +394,7 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 
 

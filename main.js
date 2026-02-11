@@ -29,13 +29,7 @@ const BASE_SPEED = 700;
 
 function getDifficulty(r){
 
-  // ===== Round6に入った瞬間 → 表示だけ99に飛ばす =====
-  if (r === 6){
-    round = 99; // ★表示ジャンプ
-    r = 99;     // ★難易度計算も99として扱う
-  }
-
-  // ===== Round1 =====
+    // ===== Round1 =====
   if (r === 1){
     return {
       boxCount: 3,
@@ -327,8 +321,15 @@ function onPick(boxId){
   if (correct){
     boxes[boxId].classList.add("correct");
     win++;
-    round++; // 正解のときだけ進む
-    msg.textContent = "当たり！";
+round++; // 正解のときだけ進む
+
+// ★Round5クリア後（roundが6になった瞬間）に99へワープ
+if (round === 6) {
+  round = 99;
+}
+
+msg.textContent = (round === 99) ? "センスあるから本番開始" : "当たり！";
+
   } else {
     boxes[boxId].classList.add("wrong");
     boxes[ballBoxId].classList.add("correct");
@@ -390,5 +391,6 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
 
 

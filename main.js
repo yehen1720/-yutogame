@@ -326,8 +326,8 @@ function onPick(boxId){
   winEl.textContent = String(win);
   loseEl.textContent = String(lose);
 
-  nextBtn.disabled = !correct; // 正解だけNEXT
-  startBtn.disabled = true;
+nextBtn.disabled = false; // ★当たりでもハズレでもNEXTで再挑戦OK
+startBtn.disabled = true;
 }
 
 function resetAll(){
@@ -376,3 +376,4 @@ nextBtn.addEventListener("click", startRound);
 
 // 初期化
 resetAll();
+
